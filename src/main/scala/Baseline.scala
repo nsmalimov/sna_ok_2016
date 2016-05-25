@@ -1,4 +1,3 @@
-
 import breeze.numerics.abs
 import org.apache.hadoop.io.compress.GzipCodec
 import org.apache.spark.broadcast.Broadcast
@@ -112,7 +111,6 @@ object Baseline {
 
             pairs.append(Array(Array(pplWithCommonFriends(i)(0), pplWithCommonFriends(j)(0)),
               newArr))
-
           }
         }
       }
@@ -137,27 +135,19 @@ object Baseline {
           .map(t => generatePairs(t.getAs[Seq[Seq[Int]]](0), numPartitionsGraph, k))
 
           .flatMap(pair => pair.map(x => {
-
             var id1 = x(0)(0)
             var id2 = x(0)(1)
-            //var ans = id1.toString + "," + id2.toString
-
             (id1, id2) -> x(1)
-
           }))
 
           .reduceByKey((x, y) => {
-
             var ar1 = x
             var ar2 = y
-
             for (i <- 0 to (ar1.length - 1)) {
               ar1(i) = ar1(i) + ar2(i)
             }
-
             ar1
           })
-
           .map(t => {
 
             PairWithCommonFriends(t._1._1, t._1._2, t._2)
@@ -173,7 +163,6 @@ object Baseline {
           for (i <- 0 to (ar.length - 1)) {
             allFreinds += ar(i);
           }
-
           allFreinds > 8
         })
       }
@@ -323,7 +312,6 @@ object Baseline {
           == ageSexBC.value.getOrElse(pair.person2, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).dateCreateClassif) 1.0
         else 0.0,
 
-
         //совпадение даты создания аккаунта
         if (ageSexBC.value.getOrElse(pair.person1, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).accCreate
           == ageSexBC.value.getOrElse(pair.person2, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).accCreate) 1.0
@@ -343,7 +331,6 @@ object Baseline {
         if (ageSexBC.value.getOrElse(pair.person1, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).yearBirth
           == ageSexBC.value.getOrElse(pair.person2, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).yearBirth) 1.0
         else 0.0
-
       ))
       )
       .leftOuterJoin(positives)
@@ -385,20 +372,18 @@ object Baseline {
       lineSplit(20).toDouble, //19
       lineSplit(21).toDouble, //20
 
-
       lineSplit(22).toDouble, //21
-      lineSplit(23).toDouble, //22 01
-      lineSplit(24).toDouble, //23 01
-      lineSplit(25).toDouble, //24 01
-      lineSplit(26).toDouble, //25 01
+      lineSplit(23).toDouble, //22 
+      lineSplit(24).toDouble, //23 
+      lineSplit(25).toDouble, //24 
+      lineSplit(26).toDouble, //25 
       lineSplit(27).toDouble, //26
-      lineSplit(28).toDouble, //27 01
-      lineSplit(29).toDouble, //28 01
-      lineSplit(30).toDouble, //29 01
-      lineSplit(31).toDouble, //30 01
-      lineSplit(32).toDouble, //31 01
-      lineSplit(33).toDouble //32 01
-
+      lineSplit(28).toDouble, //27 
+      lineSplit(29).toDouble, //28 
+      lineSplit(30).toDouble, //29 
+      lineSplit(31).toDouble, //30 
+      lineSplit(32).toDouble, //31 
+      lineSplit(33).toDouble //32 
     ))
   })
 
@@ -428,7 +413,7 @@ object Baseline {
   val boostingStrategy = BoostingStrategy.defaultParams("Regression")
   boostingStrategy.numIterations = 50 // Note: Use more iterations in practice.
   boostingStrategy.treeStrategy.maxDepth = 5
-  //  Empty categoricalFeaturesInfo indicates all features are continuous.
+  // Empty categoricalFeaturesInfo indicates all features are continuous.
   boostingStrategy.treeStrategy.categoricalFeaturesInfo = Map(2 -> 2, 3 -> 2, 4 -> 2, 5 -> 2, 7 -> 2, 8 -> 2, 9 -> 2,
     10 -> 2, 11 -> 2, 12 -> 2)
 
@@ -446,18 +431,16 @@ object Baseline {
 
   @transient val metrics = new BinaryClassificationMetrics(predictionAndLabels)
 
-  //2.0 - beta factor
+  // 2.0 - beta factor
   val threshold = metrics.fMeasureByThreshold(2.0).sortBy(-_._2).take(1)(0)._1
 
   val rocLogReg = metrics.areaUnderROC()
-
 
   val precision = metrics.precisionByThreshold().sortBy(-_._2).take(1)(0)._1
 
   val recall = metrics.recallByThreshold().sortBy(-_._2).take(1)(0)._1
 
   val f1Score = metrics.fMeasureByThreshold().sortBy(-_._2).take(1)(0)._1
-
 
   val precision2 = metrics.precisionByThreshold().sortBy(-_._2).take(1)(0)._2
 

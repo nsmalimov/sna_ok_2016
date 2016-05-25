@@ -146,7 +146,6 @@ object Baseline {
 
           }))
 
-
           .reduceByKey((x, y) => {
 
             var ar1 = x
@@ -161,8 +160,6 @@ object Baseline {
 
           .map(t => {
 
-            //var str1 = t._1.split(",")
-
             PairWithCommonFriends(t._1._1, t._1._2, t._2)
           })
 
@@ -176,7 +173,6 @@ object Baseline {
           for (i <- 0 to (ar.length - 1)) {
             allFreinds += ar(i);
           }
-
 
           allFreinds > 8
         })
@@ -220,8 +216,6 @@ object Baseline {
       )
   }
 
-  // positives foreach ( (t2) => println (t2.toString))
-
   // step 4
   println("step 4 start")
 
@@ -249,9 +243,6 @@ object Baseline {
     commonFriendsCounts
       .map(pair => (pair.person1, pair.person2) -> (Vectors.dense(
 
-        //count of friends
-        //pair.countArr.toDouble,
-
         pair.countArr(0).toDouble +
           pair.countArr(1).toDouble +
           pair.countArr(2).toDouble +
@@ -273,27 +264,26 @@ object Baseline {
           pair.countArr(18).toDouble +
           pair.countArr(19).toDouble,
 
-
-        pair.countArr(0).toDouble,
-        pair.countArr(1).toDouble,
-        pair.countArr(2).toDouble,
-        pair.countArr(3).toDouble,
-        pair.countArr(4).toDouble,
-        pair.countArr(5).toDouble,
-        pair.countArr(6).toDouble,
-        pair.countArr(7).toDouble,
-        pair.countArr(8).toDouble,
-        pair.countArr(9).toDouble,
-        pair.countArr(10).toDouble,
-        pair.countArr(11).toDouble,
-        pair.countArr(12).toDouble,
-        pair.countArr(13).toDouble,
-        pair.countArr(14).toDouble,
-        pair.countArr(15).toDouble,
-        pair.countArr(16).toDouble,
-        pair.countArr(17).toDouble,
-        pair.countArr(18).toDouble,
-        pair.countArr(19).toDouble,
+          pair.countArr(0).toDouble,
+          pair.countArr(1).toDouble,
+          pair.countArr(2).toDouble,
+          pair.countArr(3).toDouble,
+          pair.countArr(4).toDouble,
+          pair.countArr(5).toDouble,
+          pair.countArr(6).toDouble,
+          pair.countArr(7).toDouble,
+          pair.countArr(8).toDouble,
+          pair.countArr(9).toDouble,
+          pair.countArr(10).toDouble,
+          pair.countArr(11).toDouble,
+          pair.countArr(12).toDouble,
+          pair.countArr(13).toDouble,
+          pair.countArr(14).toDouble,
+          pair.countArr(15).toDouble,
+          pair.countArr(16).toDouble,
+          pair.countArr(17).toDouble,
+          pair.countArr(18).toDouble,
+          pair.countArr(19).toDouble,
 
         //разница в возрасте
         abs(ageSexBC.value.getOrElse(pair.person1, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).age
@@ -475,7 +465,6 @@ object Baseline {
 
   val f1Score2 = metrics.fMeasureByThreshold().sortBy(-_._2).take(1)(0)._2
 
-
   println("model ROC = " + rocLogReg.toString)
   println("model presision " + precision.toString + " " + precision2.toString)
   println("model recall " + recall.toString + " " + recall2.toString)
@@ -507,7 +496,6 @@ object Baseline {
         Seq(id._1 ->(id._2, prediction), id._2 ->(id._1, prediction))
       }
 
-
       .filter(t => t._1 % 11 == 7 && t._2._2 >= threshold)
       .groupByKey(numPartitions)
       .map(t => {
@@ -523,7 +511,5 @@ object Baseline {
   }
 
   testPrediction.saveAsTextFile(predictionPath, classOf[GzipCodec])
-
-}
 
 }

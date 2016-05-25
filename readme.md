@@ -1,4 +1,8 @@
-Run baseline: howto
+http://snahackathon.org/
+
+This version can get 99,6615 NDCG metrics.
+
+Run: howto
 ==============
 
 1. download [data](http://snahackathon.org/dataset) to `$DATA_HOME` 
@@ -6,8 +10,8 @@ Run baseline: howto
 3. clone the repository, then it might be opened in Idea 13+ as Scala sbt project (look at [wiki](https://github.com/snahackathon/sh2016/wiki/%D0%9A%D0%B0%D0%BA-%D0%BE%D1%82%D0%BA%D1%80%D1%8B%D1%82%D1%8C-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82-%D0%B2-IntelliJ-IDEA%3F)).
 The structure of the project is described here http://spark.apache.org/docs/latest/quick-start.html#self-contained-applications.
 `git clone <repo>`
-4. go to the directory where you cloned repository and enter `sh2016` dir
-`cd $PROJECT_HOME/sh2016`
+4. go to the directory where you cloned repository and enter to dir
+`cd $PROJECT_HOME/{{repo_name}}`
 5. build project
 `sbt package`
 6. download spark (http://spark.apache.org/downloads.html). Recommended version spark-1.6.0-bin-hadoop2.6.tgz.

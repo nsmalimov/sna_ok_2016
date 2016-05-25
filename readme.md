@@ -20,5 +20,5 @@ The structure of the project is described here http://spark.apache.org/docs/late
 8. unpack spark
 `spark tar -xvzf <spark>.tgz`
 9. send jar you made in step 5 to spark (configuration is given for 4 cores)
-``$SPARK_HOME/bin/spark-submit --class "Baseline" --master local[4] --driver-memory 4G $PROJECT_HOME/sh2016/target/scala-2.10/baseline_2.10-1.0.jar $DATA_HOME``
+``$SPARK_HOME/bin/spark-submit --class "Baseline" --master local[4] --driver-memory 4G $PROJECT_HOME/{{repo_name}}/target/scala-2.10/baseline_2.10-1.0.jar $DATA_HOME``
 

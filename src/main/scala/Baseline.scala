@@ -10,7 +10,6 @@ import org.apache.spark.sql.SQLContext
 import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.collection.mutable.ArrayBuffer
-
 import scala.collection.mutable.ArrayBuffer
 import org.apache.spark.mllib.tree.RandomForest
 

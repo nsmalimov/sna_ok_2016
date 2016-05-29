@@ -40,7 +40,7 @@ object Baseline {
 
     val predictionPath = dataDir + "prediction"
 
-    val numPartitions = 200 //if test
+    val numPartitions = 200 // if test
 
     val numPartitionsGraph = 107
 
@@ -67,10 +67,10 @@ object Baseline {
 
       .map(t => {
 
-        var t_split = t._1.split(",") //string 12333, 0
+        var t_split = t._1.split(",") // string 12333, 0
 
-        var newId = t_split(0) //id
-        var numMask = t_split(1) //mask
+        var newId = t_split(0) // id
+        var numMask = t_split(1) // mask
 
         var arrMain = t._2.toArray
 
@@ -107,7 +107,6 @@ object Baseline {
       for (i <- 0 until pplWithCommonFriends.length) {
         if (pplWithCommonFriends(i)(0) % numPartitions == k) {
           for (j <- i + 1 until pplWithCommonFriends.length) {
-
             pairs.append(Array(Array(pplWithCommonFriends(i)(0), pplWithCommonFriends(j)(0)),
               newArr))
           }
@@ -117,10 +116,8 @@ object Baseline {
     }
 
     val commonFriendsCounts = {
-
       sqlc.read.parquet(reversedGraphPath)
-
-        //TODO ?
+        // TODO ?
         .map(t => t.getAs[Seq[Array[Int]]](0))
     }
 
@@ -130,7 +127,7 @@ object Baseline {
 
         sqlc.read.parquet(reversedGraphPath)
 
-          //TODO ?
+          // TODO ?
           .map(t => generatePairs(t.getAs[Seq[Seq[Int]]](0), numPartitionsGraph, k))
 
           .flatMap(pair => pair.map(x => {
@@ -152,7 +149,7 @@ object Baseline {
             PairWithCommonFriends(t._1._1, t._1._2, t._2)
           })
 
-          //TODO ?
+          // TODO ?
           .filter(pair => {
 
           var ar = pair.countArr
@@ -169,8 +166,8 @@ object Baseline {
     }
 
     val commonFriendsCounts = {
-      sqlc.read.parquet("/Users/Nurislam/Documents/sna_hackatone/data/commonFriendsCountsPartitioned/part_*/")
-        //TODO ?
+      sqlc.read.parquet("/data/commonFriendsCountsPartitioned/part_*/")
+        // TODO ?
         .map(t => t)
     }
 
@@ -186,7 +183,7 @@ object Baseline {
     sqlc
       .read.parquet(
       commonFriendsPath + "/part_6/")
-      //45
+      // 45
       .map(t => PairWithCommonFriends(t.getAs[Int](0), t.getAs[Int](1), t.getAs[Seq[Int]](2)))
   }
 
@@ -208,7 +205,7 @@ object Baseline {
   println("step 4 start")
 
   val ageSex = {
-    sc.textFile("/Users/Nurislam/PycharmProjects/sna_hackaton/demography_file_new")
+    sc.textFile("/demography_file_new")
       .map(line => {
         val lineSplit = line.trim().split("\t")
 
@@ -231,102 +228,62 @@ object Baseline {
     commonFriendsCounts
       .map(pair => (pair.person1, pair.person2) -> (Vectors.dense(
 
-        pair.countArr(0).toDouble +
-          pair.countArr(1).toDouble +
-          pair.countArr(2).toDouble +
-          pair.countArr(3).toDouble +
-          pair.countArr(4).toDouble +
-          pair.countArr(5).toDouble +
-          pair.countArr(6).toDouble +
-          pair.countArr(7).toDouble +
-          pair.countArr(8).toDouble +
-          pair.countArr(9).toDouble +
-          pair.countArr(10).toDouble +
-          pair.countArr(11).toDouble +
-          pair.countArr(12).toDouble +
-          pair.countArr(13).toDouble +
-          pair.countArr(14).toDouble +
-          pair.countArr(15).toDouble +
-          pair.countArr(16).toDouble +
-          pair.countArr(17).toDouble +
-          pair.countArr(18).toDouble +
-          pair.countArr(19).toDouble,
-
-          pair.countArr(0).toDouble,
-          pair.countArr(1).toDouble,
-          pair.countArr(2).toDouble,
-          pair.countArr(3).toDouble,
-          pair.countArr(4).toDouble,
-          pair.countArr(5).toDouble,
-          pair.countArr(6).toDouble,
-          pair.countArr(7).toDouble,
-          pair.countArr(8).toDouble,
-          pair.countArr(9).toDouble,
-          pair.countArr(10).toDouble,
-          pair.countArr(11).toDouble,
-          pair.countArr(12).toDouble,
-          pair.countArr(13).toDouble,
-          pair.countArr(14).toDouble,
-          pair.countArr(15).toDouble,
-          pair.countArr(16).toDouble,
-          pair.countArr(17).toDouble,
-          pair.countArr(18).toDouble,
-          pair.countArr(19).toDouble,
-
-        //разница в возрасте
+        pair.countArr(n).toDouble // need add all
+        
+        // разница в возрасте
         abs(ageSexBC.value.getOrElse(pair.person1, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).age
           - ageSexBC.value.getOrElse(pair.person2, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).age).toDouble,
 
-        //одинаковые ли полы
+        // одинаковые ли полы
         if (ageSexBC.value.getOrElse(pair.person1, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).sex
           == ageSexBC.value.getOrElse(pair.person2, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).sex) 1.0
         else 0.0,
 
-        //одинаковые ли страны
+        // одинаковые ли страны
         if (ageSexBC.value.getOrElse(pair.person1, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).country
           == ageSexBC.value.getOrElse(pair.person2, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).country) 1.0
         else 0.0,
 
-        //одинаковые ли города
+        // одинаковые ли города
         if (ageSexBC.value.getOrElse(pair.person1, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).location
           == ageSexBC.value.getOrElse(pair.person2, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).location) 1.0
         else 0.0,
 
-        //олинаковые ли регионы
+        // олинаковые ли регионы
         if (ageSexBC.value.getOrElse(pair.person1, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).region
           == ageSexBC.value.getOrElse(pair.person2, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).region) 1.0
         else 0.0,
 
-        //как давно был создан аккаунт
+        // как давно был создан аккаунт
         abs(ageSexBC.value.getOrElse(pair.person1, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).accCreate
           - ageSexBC.value.getOrElse(pair.person2, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).accCreate).toDouble,
 
-        //соотнесение одной из возрастных категорий
+        // соотнесение одной из возрастных категорий
         if (ageSexBC.value.getOrElse(pair.person1, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).ageClassif
           == ageSexBC.value.getOrElse(pair.person2, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).ageClassif) 1.0
         else 0.0,
 
-        //соотнесение даты создания аккаунта одной из категорий
+        // соотнесение даты создания аккаунта одной из категорий
         if (ageSexBC.value.getOrElse(pair.person1, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).dateCreateClassif
           == ageSexBC.value.getOrElse(pair.person2, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).dateCreateClassif) 1.0
         else 0.0,
 
-        //совпадение даты создания аккаунта
+        // совпадение даты создания аккаунта
         if (ageSexBC.value.getOrElse(pair.person1, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).accCreate
           == ageSexBC.value.getOrElse(pair.person2, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).accCreate) 1.0
         else 0.0,
 
-        //совпадение даты рождения
+        // совпадение даты рождения
         if (ageSexBC.value.getOrElse(pair.person1, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).age
           == ageSexBC.value.getOrElse(pair.person2, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).age) 1.0
         else 0.0,
 
-        //совпадение года создания аккаунта
+        // совпадение года создания аккаунта
         if (ageSexBC.value.getOrElse(pair.person1, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).yearCreateAcc
           == ageSexBC.value.getOrElse(pair.person2, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).yearCreateAcc) 1.0
         else 0.0,
 
-        //совпадение года рождения
+        // совпадение года рождения
         if (ageSexBC.value.getOrElse(pair.person1, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).yearBirth
           == ageSexBC.value.getOrElse(pair.person2, AgeSex(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)).yearBirth) 1.0
         else 0.0
@@ -348,41 +305,7 @@ object Baseline {
   val data = file.map(l => {
     val lineSplit = l.split(" ")
     LabeledPoint(lineSplit(0).toDouble, Vectors.dense(
-      lineSplit(1).toDouble, //0
-
-      lineSplit(2).toDouble, //1
-      lineSplit(3).toDouble, //2
-      lineSplit(4).toDouble, //3
-      lineSplit(5).toDouble, //4
-      lineSplit(6).toDouble, //5
-      lineSplit(7).toDouble, //6
-      lineSplit(8).toDouble, //7
-      lineSplit(9).toDouble, //8
-      lineSplit(10).toDouble, //9
-      lineSplit(11).toDouble, //10
-      lineSplit(12).toDouble, //11
-      lineSplit(13).toDouble, //12
-      lineSplit(14).toDouble, //13
-      lineSplit(15).toDouble, //14
-      lineSplit(16).toDouble, //15
-      lineSplit(17).toDouble, //16
-      lineSplit(18).toDouble, //17
-      lineSplit(19).toDouble, //18
-      lineSplit(20).toDouble, //19
-      lineSplit(21).toDouble, //20
-
-      lineSplit(22).toDouble, //21
-      lineSplit(23).toDouble, //22 
-      lineSplit(24).toDouble, //23 
-      lineSplit(25).toDouble, //24 
-      lineSplit(26).toDouble, //25 
-      lineSplit(27).toDouble, //26
-      lineSplit(28).toDouble, //27 
-      lineSplit(29).toDouble, //28 
-      lineSplit(30).toDouble, //29 
-      lineSplit(31).toDouble, //30 
-      lineSplit(32).toDouble, //31 
-      lineSplit(33).toDouble //32 
+      lineSplit(n).toDouble // need add all
     ))
   })
 
@@ -484,14 +407,12 @@ object Baseline {
         val user = t._1
         val firendsWithRatings = t._2
 
-        //changed
+        // changed
         val topBestFriends = firendsWithRatings.toList.sortBy(-_._2).take(100).map(x => x._1)
         (user, topBestFriends)
       })
       .sortByKey(true, 1)
       .map(t => t._1 + "\t" + t._2.mkString("\t"))
   }
-
   testPrediction.saveAsTextFile(predictionPath, classOf[GzipCodec])
-
 }
